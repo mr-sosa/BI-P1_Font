@@ -24,7 +24,7 @@ function App() {
       'study_and_condition': datos.study + ' . ' + datos.condition
     };
 
-    const response = await fetch(URL+'/SVM', {
+    await fetch(URL+'/SVM', {
       method: 'post',
       headers: {
         Accept: 'application/json',
@@ -32,10 +32,12 @@ function App() {
       },
       body: JSON.stringify(dataSend),
     }).then((respu) => respu.json())
-    .then(() => {
+    .then((response) => {
+      console.log(response);
       const clasificacion = response.clasificacion;
       if(clasificacion === '__label__1'){
-        const exactitud = (response.prob1) * 100;
+        let exactitud = (response.prob1) * 100;
+        exactitud = Math.round(exactitud, 2);
         setResp('Este paciente es elegible con ' + exactitud + '%  de confianza.');
       } else {
         const exactitud = (response.prob0) * 100;
@@ -49,7 +51,7 @@ function App() {
       'study_and_condition': datos.study + ' . ' + datos.condition
     };
 
-    const response = await fetch(URL+'/LR', {
+    await fetch(URL+'/LR', {
       method: 'post',
       headers: {
         Accept: 'application/json',
@@ -57,10 +59,11 @@ function App() {
       },
       body: JSON.stringify(dataSend),
     }).then((respu) => respu.json())    
-    .then(() => {
+    .then((response) => {
       const clasificacion = response.clasificacion;
       if(clasificacion === '__label__1'){
-        const exactitud = (response.prob1) * 100;
+        let exactitud = (response.prob1) * 100;
+        exactitud = Math.round(exactitud, 2);
         setResp('Este paciente es elegible con ' + exactitud + '%  de confianza.');
       } else {
         const exactitud = (response.prob0) * 100;
@@ -74,7 +77,7 @@ function App() {
       'study_and_condition': datos.study + ' . ' + datos.condition
     };
 
-    const response = await fetch(URL+'/mixed', {
+    await fetch(URL+'/mixed', {
       method: 'post',
       headers: {
         Accept: 'application/json',
@@ -82,10 +85,11 @@ function App() {
       },
       body: JSON.stringify(dataSend),
     }).then((respu) => respu.json())    
-    .then(() => {
+    .then((response) => {
       const clasificacion = response.clasificacion;
       if(clasificacion === '__label__1'){
-        const exactitud = (response.prob) * 100;
+        let exactitud = (response.prob) * 100;
+        exactitud = Math.round(exactitud, 2);
         setResp('Este paciente es elegible fueremente con ' + exactitud + '%  de confianza.');
       } else if(clasificacion === 'undet'){
         setResp('No es fuertemente recomendado.');

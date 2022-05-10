@@ -37,6 +37,9 @@ ol{
   justify-content: center;
   align-items: center;
 }
+pre{
+  width: fit-content;
+}
 Form{
   display: flex;
   flex-direction: row;
