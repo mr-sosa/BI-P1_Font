@@ -3,8 +3,9 @@ import { Form, Row, Col, FormControl, Button } from 'react-bootstrap';
 import './App.css';
 
 function App() {
-  const urlFast = '';
-  const urlStrong = '';
+
+  const URL = '';
+  const [resp, setResp] = useState('');
 
   const [datos, setDatos] = useState({
     study: '',
@@ -18,14 +19,12 @@ function App() {
     })
   }
 
-  const [resp, setResp] = useState('');
-
-  const fastCheck = async () => {
+  const checkSVM = async () => {
     var dataSend = {
       'study_and_condition': datos.study + ' . ' + datos.condition
     };
 
-    const response = await fetch(urlFast, {
+    const response = await fetch(URL+'/SVM', {
       method: 'post',
       headers: {
         Accept: 'application/json',
@@ -34,17 +33,23 @@ function App() {
       body: JSON.stringify(dataSend),
     }).then((respu) => respu.json())
     .then(() => {
-      const exactitud = (response.exactitud) * 100;
-      setResp(exactitud.toString + '%')
+      const clasificacion = response.clasificacion;
+      if(clasificacion == '__label__1'){
+        const exactitud = (response.prob1) * 100;
+        setResp('Este paciente es elegible con ' + exactitud + '%  de confianza.');
+      } else {
+        const exactitud = (response.prob0) * 100;
+        setResp('Este paciente NO es elegible con ' + exactitud + '%  de confianza.');
+      }     
     });
   };
 
-  const strongCheck = async () => {
+  const checkLR = async () => {
     var dataSend = {
       'study_and_condition': datos.study + ' . ' + datos.condition
     };
 
-    const response = await fetch(urlStrong, {
+    const response = await fetch(URL+'/LR', {
       method: 'post',
       headers: {
         Accept: 'application/json',
@@ -53,8 +58,40 @@ function App() {
       body: JSON.stringify(dataSend),
     }).then((respu) => respu.json())    
     .then(() => {
-      const exactitud = (response.exactitud) * 100;
-      setResp(exactitud.toString + '%')
+      const clasificacion = response.clasificacion;
+      if(clasificacion == '__label__1'){
+        const exactitud = (response.prob1) * 100;
+        setResp('Este paciente es elegible con ' + exactitud + '%  de confianza.');
+      } else {
+        const exactitud = (response.prob0) * 100;
+        setResp('Este paciente NO es elegible con ' + exactitud + '%  de confianza.');
+      }
+    });
+  };
+
+  const checkMixed = async () => {
+    var dataSend = {
+      'study_and_condition': datos.study + ' . ' + datos.condition
+    };
+
+    const response = await fetch(URL+'/mixed', {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataSend),
+    }).then((respu) => respu.json())    
+    .then(() => {
+      const clasificacion = response.clasificacion;
+      if(clasificacion == '__label__1'){
+        const exactitud = (response.prob) * 100;
+        setResp('Este paciente es elegible fueremente con ' + exactitud + '%  de confianza.');
+      } else if(clasificacion == 'undet'){
+        setResp('No es fuertemente recomendado.');
+      } else {
+        setResp('Este paciente NO es elegible.');
+      }
     });
   };
 
@@ -70,22 +107,23 @@ function App() {
             <ol>
               <li>Put a study.</li>
               <li>Put a condition.</li>
-              <li>Click one of the two buttons (Fast Check or Strong Check).</li>
+              <li>Click one of the three buttons (Check SVM, Check LR or Check Mixed).</li>
             </ol>
-            <p>Fast check will use a ...</p>
-            <p>Strong check will use a ...</p>
+            <p>Check SVM will use a Support Vector Classification.</p>
+            <p>Check LR will use a Logistic Regression.</p>
+            <p>Check Mixed will use a both types.</p>
           </div>
         </div>
         <Form>
           <Row className="align-items-center">
             <Col xs="auto">
               <Form.Label htmlFor="inlineFormInput" visuallyHidden>
-                Name
+                Study
               </Form.Label>
               <input 
-                type="text" 
+                type="textarea" 
                 placeholder="Study"  
-                className="form-control mb-2" 
+                className="form-control" 
                 id="inlineFormInput"
                 onChange={handleInputChange} 
                 name="study"
@@ -93,25 +131,30 @@ function App() {
             </Col>
             <Col xs="auto">
               <Form.Label htmlFor="inlineFormInputGroup" visuallyHidden>
-                Username
+                Condition
               </Form.Label>
               <input 
-                type="text" 
+                type="textarea" 
                 placeholder="Condition"  
-                className="form-control mb-2" 
+                className="form-control" 
                 id="inlineFormInput"
                 onChange={handleInputChange} 
                 name="condition"
               />
             </Col>
             <Col xs="auto">
-              <Button className="mb-2" onClick={ ()=>{setResp('fastCheck'+datos.study);fastCheck();}}>
-                Fast Check
+              <Button className="mb-2" onClick={ () => { checkSVM() }}>
+                Check SVM
               </Button>
             </Col>
             <Col xs="auto">
-              <Button className="mb-2" onClick={()=>{setResp('strongCheck'+datos.condition);strongCheck();}}>
-                Strong check
+              <Button className="mb-2" onClick={ () => { checkLR() }}>
+                Check LR
+              </Button>
+            </Col>
+            <Col xs="auto">
+              <Button className="mb-2" onClick={ () => { checkMixed() }}>
+                Check Mixed 
               </Button>
             </Col>
           </Row>
