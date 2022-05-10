@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Row, Col, FormControl, Button } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Form, Row, Col, Button } from 'react-bootstrap';
 import './App.css';
 
 function App() {
 
-  const URL = '';
+  const URL = 'http://localhost:8000';
   const [resp, setResp] = useState('');
 
   const [datos, setDatos] = useState({
@@ -34,7 +34,7 @@ function App() {
     }).then((respu) => respu.json())
     .then(() => {
       const clasificacion = response.clasificacion;
-      if(clasificacion == '__label__1'){
+      if(clasificacion === '__label__1'){
         const exactitud = (response.prob1) * 100;
         setResp('Este paciente es elegible con ' + exactitud + '%  de confianza.');
       } else {
@@ -59,7 +59,7 @@ function App() {
     }).then((respu) => respu.json())    
     .then(() => {
       const clasificacion = response.clasificacion;
-      if(clasificacion == '__label__1'){
+      if(clasificacion === '__label__1'){
         const exactitud = (response.prob1) * 100;
         setResp('Este paciente es elegible con ' + exactitud + '%  de confianza.');
       } else {
@@ -84,10 +84,10 @@ function App() {
     }).then((respu) => respu.json())    
     .then(() => {
       const clasificacion = response.clasificacion;
-      if(clasificacion == '__label__1'){
+      if(clasificacion === '__label__1'){
         const exactitud = (response.prob) * 100;
         setResp('Este paciente es elegible fueremente con ' + exactitud + '%  de confianza.');
-      } else if(clasificacion == 'undet'){
+      } else if(clasificacion === 'undet'){
         setResp('No es fuertemente recomendado.');
       } else {
         setResp('Este paciente NO es elegible.');
